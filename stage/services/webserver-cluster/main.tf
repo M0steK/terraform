@@ -2,6 +2,12 @@ provider "aws" {
   region = "eu-north-1"
 }
 
+terraform {
+  backend "s3" {
+    key = "stage/services/webserver-cluster/terraform.tfstate"
+  }
+}
+
 resource "aws_security_group" "instance" {
   name = "terraform_example_instance"
 
@@ -125,24 +131,3 @@ resource "aws_lb_listener_rule" "asg" {
   }
 }
 
-variable "server_port" {
-  description = "Port for the server to listen on"
-  type        = number
-  default     = 8080
-}
-
-output "alb_dns_name" {
-  value       = aws_lb.example.dns_name
-  description = "The domain name of the load balancer"
-}
-
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
